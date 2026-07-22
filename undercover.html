@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>UNDERCOVER — Dossier confidentiel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #16120d;
+    --bg-mid: #1f1911;
+    --bg-vignette: #070605;
+    --lamp-glow: rgba(255, 196, 120, 0.13);
+    --paper: #e9dbac;
+    --paper-dark: #d7c184;
+    --paper-line: rgba(34,26,15,0.14);
+    --ink: #221c14;
+    --ink-soft: #54473a;
+    --accent-red: #9c2b23;
+    --accent-gold: #b8892f;
+    --muted: #8c8272;
+    --civil: #3c6e52;
+    --undercover: #9c2b23;
+    --font-display: 'Special Elite', 'Courier New', monospace;
+    --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    height:100%;
+    margin:0;
+    background:
+      radial-gradient(ellipse 640px 420px at 50% -6%, var(--lamp-glow), transparent 62%),
+      radial-gradient(ellipse at 50% 0%, var(--bg-mid) 0%, var(--bg) 55%, var(--bg-vignette) 100%);
+    font-family: var(--font-body);
+    color: var(--paper);
+    overflow:hidden;
+    position: relative;
+  }
+  body::before{
+    content:"";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  #app{
+    height:100%;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .screen{
+    width:100%;
+    max-width: 420px;
+    display:none;
+    flex-direction:column;
+    align-items:stretch;
+    animation: fadeIn .5s ease;
+  }
+  .screen.active{ display:flex; }
+  @keyframes fadeIn{
+    from{ opacity:0; transform: translateY(8px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent-gold);
+    text-align:center;
+    margin-bottom: 6px;
+    text-transform:uppercase;
+  }
+  h1.title{
+    font-family: var(--font-display);
+    font-size: 40px;
+    text-align:center;
+    color: var(--paper);
+    letter-spacing: 4px;
+    margin: 0 0 4px 0;
+    text-shadow: 0 0 18px rgba(184,146,47,0.25);
+  }
+  .subtitle{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-align:center;
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+
+  /* Setup */
+  .stamp-badge{
+    width:78px; height:78px;
+    margin: 0 auto 18px auto;
+    border: 3px solid var(--accent-red);
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    color: var(--accent-red);
+    font-family: var(--font-display);
+    font-size: 11px;
+    text-align:center;
+    line-height:1.3;
+    transform: rotate(-8deg);
+    opacity: 0.85;
+    letter-spacing: 1px;
+  }
+  .card{
+    background: var(--paper);
+    border-radius: 4px 4px 2px 2px;
+    padding: 30px 22px 26px;
+    color: var(--ink);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 2px 0 rgba(0,0,0,0.15) inset;
+    position: relative;
+    margin-top: 16px;
+  }
+  .card::before{
+    content:"";
+    position:absolute; inset:8px;
+    border: 1px solid var(--paper-line);
+    pointer-events:none;
+  }
+  .card::after{
+    content:"";
+    position:absolute; inset:0;
+    border-radius: inherit;
+    pointer-events:none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .folder-tab{
+    position: absolute;
+    top: -16px;
+    left: 22px;
+    background: var(--paper-dark);
+    color: var(--ink-soft);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px 9px;
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0% 100%);
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.2) inset;
+  }
+  .field-label{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    text-align:center;
+  }
+  .count-row{
+    display:flex; gap:10px; justify-content:center; margin-bottom: 24px;
+  }
+  .count-btn{
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 22px;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .count-btn.selected{
+    background: var(--ink);
+    color: var(--paper);
+    transform: scale(1.08);
+  }
+  .names-list{
+    display:flex; flex-direction:column; gap:8px; margin-bottom: 22px;
+  }
+  .player-row{
+    display:flex; align-items:center; gap:10px;
+  }
+  .player-row .name-input{
+    flex:1; min-width:0;
+  }
+  .player-row.hidden-player .name-input{
+    opacity: 0.35;
+    text-decoration: line-through;
+  }
+  .player-toggle-btn{
+    flex-shrink:0;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height:1;
+    cursor:pointer;
+    transition: all .15s ease;
+  }
+  .player-toggle-btn.is-hidden{
+    border-color: var(--muted);
+    color: var(--muted);
+  }
+  .name-input{
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 2px solid var(--paper-line);
+    background: transparent;
+    color: var(--ink);
+    outline:none;
+  }
+  .name-input:focus{ border-bottom-color: var(--accent-red); }
+
+  .btn{
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 15px 20px;
+    border-radius: 3px;
+    border: none;
+    cursor:pointer;
+    width:100%;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{
+    background: var(--accent-red);
+    color: var(--paper);
+    box-shadow: 0 8px 20px rgba(167,51,42,0.35);
+  }
+  .btn-ghost{
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid rgba(255,255,255,0.15);
+    margin-top: 12px;
+  }
+  .btn-green{
+    background: var(--civil);
+    color: var(--paper);
+    box-shadow: 0 8px 20px rgba(60,110,82,0.35);
+  }
+  .btn-red{
+    background: var(--accent-red);
+    color: var(--paper);
+    box-shadow: 0 8px 20px rgba(167,51,42,0.35);
+  }
+
+  /* Reveal screen */
+  .dossier-num{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-gold);
+    text-align:center;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .pass-name{
+    font-family: var(--font-display);
+    font-size: 28px;
+    text-align:center;
+    color: var(--paper);
+    margin: 0 0 26px 0;
+  }
+  .card-flip-wrap{
+    margin-bottom: 22px;
+  }
+  .card-flip{
+    position: relative;
+    width: 100%;
+    height: 220px;
+    cursor: pointer;
+  }
+  .card-face{
+    position:absolute; inset:0;
+    border-radius: 6px;
+    display:none;
+    align-items:center; justify-content:center;
+    flex-direction:column;
+    padding: 20px;
+  }
+  .card-face.face-visible{ display:flex; }
+  .card-front{
+    background:
+      repeating-linear-gradient(135deg, transparent 0 18px, rgba(255,255,255,0.03) 18px 19px),
+      #1a1d27;
+    border: 2px dashed rgba(184,146,47,0.4);
+  }
+  .card-front .lock-icon{
+    font-size: 30px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+  }
+  .card-front .tap-txt{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .card-back{
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--paper-line);
+    overflow:hidden;
+  }
+  .card-back::after{
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .card-back .watermark{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-display);
+    font-size: 46px;
+    color: rgba(28,31,38,0.05);
+    transform: rotate(-18deg);
+    letter-spacing: 4px;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+  .card-back .word-label{
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--ink-soft);
+    text-transform:uppercase;
+    margin-bottom: 8px;
+  }
+  .card-back .word-value{
+    font-family: var(--font-display);
+    font-size: 26px;
+    color: var(--accent-red);
+    text-align:center;
+    line-height: 1.25;
+    transform: rotate(-2deg);
+  }
+  .hint-txt{
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align:center;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+
+  /* Discussion */
+  .briefing{
+    font-family: var(--font-body);
+    font-size: 15px;
+    color: var(--paper);
+    text-align:center;
+    line-height: 1.7;
+    margin-bottom: 26px;
+  }
+  .briefing b{ color: var(--accent-gold); }
+
+  /* Results */
+  .results-list{
+    display:flex; flex-direction:column; gap:10px; margin-bottom: 20px;
+  }
+  .result-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--paper);
+    border-radius: 4px;
+    padding: 12px 16px;
+    color: var(--ink);
+  }
+  .result-name{
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .result-role{
+    font-family: var(--font-display);
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: var(--paper);
+  }
+  .role-civil{ background: var(--civil); }
+  .role-undercover{ background: var(--undercover); }
+  .winner-btn{ margin-bottom: 12px; }
+  .winner-btn:last-child{ margin-bottom: 0; }
+  .words-recap{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-align:center;
+    margin-bottom: 22px;
+    line-height: 1.8;
+  }
+  .words-recap span{ color: var(--paper); }
+
+  .progress-dots{
+    display:flex; gap:6px; justify-content:center; margin-top:18px;
+  }
+  .dot{
+    width:6px; height:6px; border-radius:50%;
+    background: rgba(255,255,255,0.15);
+  }
+  .dot.done{ background: var(--accent-gold); }
+
+  /* Word pair editor */
+  .pairs-textarea{
+    width: 100%;
+    min-height: 44vh;
+    resize: vertical;
+    background: var(--paper);
+    color: var(--ink);
+    border: none;
+    border-radius: 4px;
+    padding: 14px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    outline: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+  .hint-txt code{
+    font-family: var(--font-mono);
+    background: rgba(255,255,255,0.06);
+    padding: 2px 5px;
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP SCREEN -->
+  <div class="screen active" id="screen-setup">
+    <div class="stamp-badge">TOP<br/>SECRET</div>
+    <h1 class="title">UNDERCOVER</h1>
+    <div class="subtitle">DOSSIER CONFIDENTIEL · MOTS EN TOUS GENRES</div>
+    <div class="card">
+      <div class="folder-tab">Dossier actif</div>
+      <div class="field-label" id="names-label">Agents disponibles</div>
+      <div class="names-list" id="names-list"></div>
+    </div>
+    <div style="height:18px;"></div>
+    <button class="btn btn-green" id="btn-start">Lancer la partie</button>
+    <button class="btn btn-ghost" id="btn-view-scores">Voir les scores</button>
+    <button class="btn btn-ghost" id="btn-open-editor">Éditer les mots</button>
+  </div>
+
+  <!-- REVEAL SCREEN -->
+  <div class="screen" id="screen-reveal">
+    <div class="dossier-num" id="dossier-num">DOSSIER N°01</div>
+    <div class="pass-name" id="pass-name">Passe le téléphone à<br/></div>
+    <div class="card-flip-wrap">
+      <div class="card-flip" id="card-flip">
+        <div class="card-face card-front face-visible" id="card-front">
+          <div class="lock-icon">🔒</div>
+          <div class="tap-txt">Touche pour ouvrir le dossier</div>
+        </div>
+        <div class="card-face card-back" id="card-back">
+          <div class="watermark">CONFIDENTIEL</div>
+          <div class="word-label">Ton mot est</div>
+          <div class="word-value" id="word-value">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="hint-txt">Mémorise ton mot sans le montrer aux autres,<br/>puis referme le dossier avant de passer le téléphone.</div>
+    <button class="btn btn-primary" id="btn-next-player" disabled>Ouvrir le dossier</button>
+    <div class="progress-dots" id="progress-dots"></div>
+  </div>
+
+  <!-- DISCUSSION SCREEN -->
+  <div class="screen" id="screen-discussion">
+    <div class="stamp-badge" style="border-color: var(--accent-gold); color: var(--accent-gold);">EN<br/>MISSION</div>
+    <h1 class="title" style="font-size:30px;">À VOS INDICES</h1>
+    <div class="subtitle">TOUS LES DOSSIERS ONT ÉTÉ CONSULTÉS</div>
+    <div class="briefing">
+      Chacun donne à tour de rôle <b>un indice</b> lié à son mot,<br/>
+      sans jamais le dire directement.<br/><br/>
+      Discutez, votez, démasquez les infiltrés —<br/>
+      puis appuyez ci-dessous quand vous êtes prêts.
+    </div>
+    <button class="btn btn-primary" id="btn-reveal-results">Afficher les résultats</button>
+  </div>
+
+  <!-- RESULTS SCREEN -->
+  <div class="screen" id="screen-results">
+    <div class="eyebrow">Dossier clos</div>
+    <h1 class="title" style="font-size:32px;">RÉSULTATS</h1>
+    <div class="words-recap" id="words-recap"></div>
+    <div class="results-list" id="results-list"></div>
+
+    <div id="winner-choice">
+      <div class="field-label" style="color:var(--muted);">Qui a gagné cette manche ?</div>
+      <button class="btn winner-btn" id="btn-civils-win" style="background:var(--civil); color:var(--paper);">Les civils gagnent · +1 pt chacun</button>
+      <button class="btn winner-btn" id="btn-undercover-win" style="background:var(--undercover); color:var(--paper);">L'imposteur gagne · +3 pts</button>
+    </div>
+
+    <div id="scoreboard-wrap" style="display:none;">
+      <div class="field-label" style="color:var(--muted); margin-top:6px;">Tableau des scores</div>
+      <div class="results-list" id="scoreboard-list"></div>
+    </div>
+
+    <div id="results-continue" style="display:none;">
+      <button class="btn btn-green" id="btn-new-round">Nouvelle manche (mêmes agents)</button>
+      <button class="btn btn-ghost" id="btn-new-game">Quitter</button>
+    </div>
+  </div>
+
+  <!-- ALL-TIME SCORES SCREEN -->
+  <div class="screen" id="screen-scores">
+    <div class="eyebrow">Archives</div>
+    <h1 class="title" style="font-size:30px;">TABLEAU DES SCORES</h1>
+    <div class="subtitle">CLASSEMENT GÉNÉRAL</div>
+    <div class="results-list" id="all-scores-list"></div>
+    <div class="hint-txt" id="all-scores-empty" style="display:none;">Aucun score enregistré pour l'instant.<br/>Termine une manche pour commencer à marquer des points.</div>
+    <div style="height:6px;"></div>
+    <button class="btn btn-red" id="btn-reset-scores">Réinitialiser les scores</button>
+    <div id="reset-scores-confirm" style="display:none;">
+      <div class="hint-txt" style="margin: 12px 0;">Es-tu sûr ? Cette action est irréversible.</div>
+      <button class="btn btn-red" id="btn-reset-scores-confirm">Oui, tout réinitialiser</button>
+      <button class="btn btn-ghost" id="btn-reset-scores-cancel">Annuler</button>
+    </div>
+    <div class="hint-txt" id="reset-scores-feedback" style="min-height:16px;"></div>
+    <button class="btn btn-ghost" id="btn-scores-back">Retour</button>
+  </div>
+
+  <!-- WORD PAIR EDITOR SCREEN -->
+  <div class="screen" id="screen-editor">
+    <div class="eyebrow">Archives</div>
+    <h1 class="title" style="font-size:30px;">DUOS DE MOTS</h1>
+    <div class="subtitle">GÉRER LA BANQUE DE MOTS</div>
+
+    <div class="hint-txt" style="text-align:left; margin-bottom:14px;">
+      Un duo par ligne, séparé par des virgules :<br/>
+      <code style="color:var(--paper);">Mot des civils, Mot de l'infiltré, déjà joué (true/false)</code><br/>
+      Le 3ᵉ champ est facultatif (false par défaut).
+    </div>
+
+    <textarea id="pairs-textarea" class="pairs-textarea" spellcheck="false" placeholder="Albert Einstein, Léonard de Vinci, false&#10;Le café, Le thé, true"></textarea>
+
+    <div style="height:14px;"></div>
+    <button class="btn btn-primary" id="btn-save-pairs">Enregistrer la liste</button>
+    <div class="hint-txt" id="pairs-save-feedback" style="min-height:16px;"></div>
+
+    <button class="btn btn-ghost" id="btn-editor-back">Retour</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+
+  // Default word pairs — used only to seed local storage on first run
+  const DEFAULT_PAIRS = [
+    ["Albert Einstein", "Léonard de Vinci"],
+    ["La Tour Eiffel", "La Statue de la Liberté"],
+    ["Le café", "Le thé"],
+    ["Cléopâtre", "Marie-Antoinette"],
+    ["La Lune", "Le Soleil"],
+    ["Batman", "Zorro"],
+    ["Le Titanic", "La Tour de Pise"],
+    ["Napoléon", "Jules César"],
+    ["Le parapluie", "L'imperméable"],
+    ["Yoda", "Merlin l'Enchanteur"],
+    ["Le Louvre", "Le British Museum"],
+    ["Mozart", "Beethoven"],
+    ["La pizza", "Le hamburger"],
+    ["Sherlock Holmes", "Hercule Poirot"],
+    ["Le Sahara", "L'Antarctique"],
+    ["Steve Jobs", "Thomas Edison"],
+    ["Le vélo", "La trottinette"],
+    ["Dracula", "Frankenstein"],
+    ["La Joconde", "Le Cri (Munch)"],
+    ["Le carnaval de Rio", "Le Nouvel An chinois"],
+    ["Superman", "Hercule (mythologie)"],
+    ["Le chocolat", "La vanille"],
+    ["Christophe Colomb", "Marco Polo"],
+    ["La liberté", "La justice"],
+    ["Le smartphone", "L'ordinateur portable"],
+    ["Peter Pan", "Aladdin"],
+    ["Le volcan", "Le tremblement de terre"],
+    ["Elvis Presley", "Michael Jackson"],
+    ["La démocratie", "La monarchie"],
+    ["Le Père Noël", "Les Rois Mages"],
+  ];
+
+  const state = {
+    playerCount: 4,
+    names: [],
+    order: [],       // shuffled indices for reveal order
+    roles: [],        // 'civil' | 'undercover' per player index
+    words: [],        // word assigned per player index
+    civilWord: '',
+    undercoverWord: '',
+    currentStep: 0,   // index into order[] during reveal
+    revealed: false
+  };
+
+  // ---------- LOCAL STORAGE HELPERS ----------
+  const LS_NAMES_KEY = 'undercover_playerNames';
+  const LS_PLAYERS_KEY = 'undercover_players';
+  const LS_SCORES_KEY = 'undercover_scores';
+  const PLAYER_SLOTS = 5;
+
+  function loadNamesFromStorage(){
+    try{
+      const raw = localStorage.getItem(LS_NAMES_KEY);
+      if(raw){
+        const arr = JSON.parse(raw);
+        if(Array.isArray(arr)) return arr;
+      }
+    }catch(e){}
+    return [];
+  }
+
+  function loadPlayersFromStorage(){
+    try{
+      const raw = localStorage.getItem(LS_PLAYERS_KEY);
+      if(raw){
+        const arr = JSON.parse(raw);
+        if(Array.isArray(arr) && arr.length){
+          const players = [];
+          for(let i = 0; i < PLAYER_SLOTS; i++){
+            players.push({
+              name: (arr[i] && arr[i].name) || '',
+              hidden: !!(arr[i] && arr[i].hidden)
+            });
+          }
+          return players;
+        }
+      }
+    }catch(e){}
+    // migration: seed from the old names-only storage if present
+    const oldNames = loadNamesFromStorage();
+    const players = [];
+    for(let i = 0; i < PLAYER_SLOTS; i++){
+      players.push({ name: oldNames[i] || '', hidden: false });
+    }
+    return players;
+  }
+
+  function savePlayersToStorage(players){
+    try{ localStorage.setItem(LS_PLAYERS_KEY, JSON.stringify(players)); }catch(e){}
+  }
+
+  function loadScores(){
+    try{
+      const raw = localStorage.getItem(LS_SCORES_KEY);
+      if(raw){
+        const obj = JSON.parse(raw);
+        if(obj && typeof obj === 'object') return obj;
+      }
+    }catch(e){}
+    return {};
+  }
+
+  function saveScores(scores){
+    try{ localStorage.setItem(LS_SCORES_KEY, JSON.stringify(scores)); }catch(e){}
+  }
+
+  function resetScores(){
+    try{ localStorage.removeItem(LS_SCORES_KEY); }catch(e){}
+  }
+
+  const LS_PAIRS_KEY = 'undercover_wordPairs';
+
+  function makeId(){
+    return 'p_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+  }
+
+  function loadPairs(){
+    try{
+      const raw = localStorage.getItem(LS_PAIRS_KEY);
+      if(raw){
+        const arr = JSON.parse(raw);
+        if(Array.isArray(arr) && arr.length){
+          return arr.map(p => ({
+            id: p.id || makeId(),
+            civil: p.civil || '',
+            undercover: p.undercover || '',
+            played: !!p.played
+          }));
+        }
+      }
+    }catch(e){}
+    const initial = DEFAULT_PAIRS.map(p => ({ id: makeId(), civil: p[0], undercover: p[1], played: false }));
+    savePairs(initial);
+    return initial;
+  }
+
+  function savePairs(pairs){
+    try{ localStorage.setItem(LS_PAIRS_KEY, JSON.stringify(pairs)); }catch(e){}
+  }
+
+  let wordPairs = loadPairs();
+
+  function pickWordPair(){
+    let available = wordPairs.filter(p => !p.played && p.civil.trim() && p.undercover.trim());
+    if(available.length === 0){
+      // All usable pairs have been played (or none exist besides blanks) — reset played flags and try again.
+      wordPairs.forEach(p => { p.played = false; });
+      available = wordPairs.filter(p => p.civil.trim() && p.undercover.trim());
+    }
+    if(available.length === 0) return null;
+    const pair = available[Math.floor(Math.random() * available.length)];
+    pair.played = true;
+    savePairs(wordPairs);
+    return pair;
+  }
+
+  const screens = {
+    setup: document.getElementById('screen-setup'),
+    reveal: document.getElementById('screen-reveal'),
+    discussion: document.getElementById('screen-discussion'),
+    results: document.getElementById('screen-results'),
+    editor: document.getElementById('screen-editor'),
+    scores: document.getElementById('screen-scores'),
+  };
+  function showScreen(name){
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+  }
+
+  // ---------- SETUP ----------
+  const namesList = document.getElementById('names-list');
+  const namesLabel = document.getElementById('names-label');
+
+  function renderPlayersList(){
+    namesLabel.style.display = 'block';
+    namesList.innerHTML = '';
+    state.players.forEach((p, i) => {
+      const row = document.createElement('div');
+      row.className = 'player-row' + (p.hidden ? ' hidden-player' : '');
+
+      const input = document.createElement('input');
+      input.className = 'name-input';
+      input.placeholder = 'Agent ' + (i+1);
+      input.maxLength = 18;
+      input.value = p.name || '';
+      input.disabled = p.hidden;
+      input.addEventListener('input', (e) => {
+        state.players[i].name = e.target.value;
+        savePlayersToStorage(state.players);
+      });
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.className = 'player-toggle-btn' + (p.hidden ? ' is-hidden' : '');
+      toggleBtn.textContent = p.hidden ? '+' : '✕';
+      toggleBtn.title = p.hidden ? 'Ajouter ce joueur à la partie' : 'Retirer ce joueur de la partie';
+      toggleBtn.addEventListener('click', () => {
+        state.players[i].hidden = !state.players[i].hidden;
+        savePlayersToStorage(state.players);
+        renderPlayersList();
+      });
+
+      row.appendChild(input);
+      row.appendChild(toggleBtn);
+      namesList.appendChild(row);
+    });
+  }
+
+  state.players = loadPlayersFromStorage();
+  renderPlayersList();
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  document.getElementById('btn-start').addEventListener('click', () => {
+    const activePlayers = state.players.filter(p => !p.hidden);
+    if(activePlayers.length < 3){
+      alert('Il faut au moins 3 agents actifs pour lancer une partie.');
+      return;
+    }
+    state.names = activePlayers.map((p, i) => (p.name && p.name.trim()) ? p.name.trim() : ('Agent ' + (i+1)));
+    state.playerCount = state.names.length;
+    savePlayersToStorage(state.players);
+    setupRound(true);
+  });
+
+  document.getElementById('btn-reset-scores').addEventListener('click', () => {
+    document.getElementById('btn-reset-scores').style.display = 'none';
+    document.getElementById('reset-scores-confirm').style.display = 'block';
+    document.getElementById('reset-scores-feedback').textContent = '';
+  });
+
+  function setupRound(newWords){
+    const n = state.playerCount;
+    // number of undercover agents
+    const undercoverCount = 1;
+
+    if(newWords){
+      const pair = pickWordPair();
+      if(!pair){
+        alert("Aucun duo de mots disponible. Ajoute-en dans l'éditeur de mots.");
+        showScreen('setup');
+        return;
+      }
+      // randomize which of the two words is the "majority" (civil) word
+      if(Math.random() < 0.5){
+        state.civilWord = pair.civil;
+        state.undercoverWord = pair.undercover;
+      } else {
+        state.civilWord = pair.undercover;
+        state.undercoverWord = pair.civil;
+      }
+    }
+
+    // assign roles
+    const indices = shuffle([...Array(n).keys()]);
+    const undercoverIdx = new Set(indices.slice(0, undercoverCount));
+    state.roles = [];
+    state.words = [];
+    for(let i = 0; i < n; i++){
+      const isUndercover = undercoverIdx.has(i);
+      state.roles[i] = isUndercover ? 'undercover' : 'civil';
+      state.words[i] = isUndercover ? state.undercoverWord : state.civilWord;
+    }
+
+    state.order = shuffle([...Array(n).keys()]);
+    state.currentStep = 0;
+    state.revealed = false;
+
+    renderProgressDots();
+    loadCurrentPlayerCard();
+    showScreen('reveal');
+  }
+
+  // ---------- REVEAL ----------
+  const cardFlip = document.getElementById('card-flip');
+  const cardFront = document.getElementById('card-front');
+  const cardBack = document.getElementById('card-back');
+  const btnNextPlayer = document.getElementById('btn-next-player');
+  const passName = document.getElementById('pass-name');
+  const dossierNum = document.getElementById('dossier-num');
+  const wordValue = document.getElementById('word-value');
+  const progressDots = document.getElementById('progress-dots');
+
+  function renderProgressDots(){
+    progressDots.innerHTML = '';
+    for(let i = 0; i < state.playerCount; i++){
+      const d = document.createElement('div');
+      d.className = 'dot' + (i < state.currentStep ? ' done' : '');
+      progressDots.appendChild(d);
+    }
+  }
+
+  function setCardRevealed(isRevealed){
+    cardFront.classList.toggle('face-visible', !isRevealed);
+    cardBack.classList.toggle('face-visible', isRevealed);
+  }
+
+  function loadCurrentPlayerCard(){
+    const playerIdx = state.order[state.currentStep];
+    const name = state.names[playerIdx];
+    passName.innerHTML = 'Passe le téléphone à<br/>' + escapeHtml(name);
+    dossierNum.textContent = 'DOSSIER N°' + String(state.currentStep + 1).padStart(2,'0');
+    // Reset to the closed/front state BEFORE writing the new word, so the
+    // next player's word is never present in the DOM while the card could
+    // still be seen as revealed by the previous player.
+    setCardRevealed(false);
+    wordValue.textContent = state.words[playerIdx];
+    state.revealed = false;
+    btnNextPlayer.textContent = 'Ouvrir le dossier';
+    btnNextPlayer.disabled = false;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function escapeAttr(str){
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  cardFlip.addEventListener('click', () => {
+    if(state.revealed) return;
+    setCardRevealed(true);
+    state.revealed = true;
+    btnNextPlayer.textContent = (state.currentStep === state.playerCount - 1)
+      ? 'Terminer la distribution'
+      : 'Joueur suivant';
+  });
+
+  btnNextPlayer.addEventListener('click', () => {
+    if(!state.revealed){
+      // treat as "open dossier" shortcut too
+      setCardRevealed(true);
+      state.revealed = true;
+      btnNextPlayer.textContent = (state.currentStep === state.playerCount - 1)
+        ? 'Terminer la distribution'
+        : 'Joueur suivant';
+      return;
+    }
+    if(state.currentStep < state.playerCount - 1){
+      state.currentStep++;
+      renderProgressDots();
+      loadCurrentPlayerCard();
+    } else {
+      renderProgressDots();
+      showScreen('discussion');
+    }
+  });
+
+  // ---------- DISCUSSION ----------
+  document.getElementById('btn-reveal-results').addEventListener('click', () => {
+    renderResults();
+    resetResultsUI();
+    showScreen('results');
+  });
+
+  // ---------- RESULTS ----------
+  const resultsList = document.getElementById('results-list');
+  const wordsRecap = document.getElementById('words-recap');
+  const winnerChoice = document.getElementById('winner-choice');
+  const scoreboardWrap = document.getElementById('scoreboard-wrap');
+  const scoreboardList = document.getElementById('scoreboard-list');
+  const resultsContinue = document.getElementById('results-continue');
+
+  function renderResults(){
+    resultsList.innerHTML = '';
+    for(let i = 0; i < state.playerCount; i++){
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      const isUndercover = state.roles[i] === 'undercover';
+      row.innerHTML =
+        '<span class="result-name">' + escapeHtml(state.names[i]) + '</span>' +
+        '<span class="result-role ' + (isUndercover ? 'role-undercover' : 'role-civil') + '">' +
+        (isUndercover ? 'INFILTRÉ' : 'CIVIL') + '</span>';
+      resultsList.appendChild(row);
+    }
+    wordsRecap.innerHTML =
+      'Mot des civils : <span>' + escapeHtml(state.civilWord) + '</span><br/>' +
+      'Mot de l\'infiltré : <span>' + escapeHtml(state.undercoverWord) + '</span>';
+  }
+
+  function resetResultsUI(){
+    winnerChoice.style.display = 'block';
+    scoreboardWrap.style.display = 'none';
+    resultsContinue.style.display = 'none';
+  }
+
+  function applyRoundScoring(winnerSide){
+    const scores = loadScores();
+    for(let i = 0; i < state.playerCount; i++){
+      const name = state.names[i];
+      if(!(name in scores)) scores[name] = 0;
+      const isUndercover = state.roles[i] === 'undercover';
+      if(winnerSide === 'civils' && !isUndercover){
+        scores[name] += 1;
+      } else if(winnerSide === 'undercover' && isUndercover){
+        scores[name] += 3;
+      }
+    }
+    saveScores(scores);
+    return scores;
+  }
+
+  function renderScoreboard(scores){
+    scoreboardList.innerHTML = '';
+    const rows = state.names.map(name => ({ name, score: scores[name] || 0 }));
+    rows.sort((a,b) => b.score - a.score);
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML =
+        '<span class="result-name">' + escapeHtml(r.name) + '</span>' +
+        '<span class="result-role" style="background:var(--accent-gold); color:var(--ink);">' +
+        r.score + (r.score > 1 ? ' pts' : ' pt') + '</span>';
+      scoreboardList.appendChild(row);
+    });
+  }
+
+  function finalizeRound(winnerSide){
+    const scores = applyRoundScoring(winnerSide);
+    renderScoreboard(scores);
+    winnerChoice.style.display = 'none';
+    scoreboardWrap.style.display = 'block';
+    resultsContinue.style.display = 'block';
+  }
+
+  document.getElementById('btn-civils-win').addEventListener('click', () => finalizeRound('civils'));
+  document.getElementById('btn-undercover-win').addEventListener('click', () => finalizeRound('undercover'));
+
+  document.getElementById('btn-new-round').addEventListener('click', () => {
+    setupRound(true);
+  });
+
+  document.getElementById('btn-new-game').addEventListener('click', () => {
+    showScreen('setup');
+  });
+
+  // ---------- WORD PAIR EDITOR ----------
+  const pairsTextarea = document.getElementById('pairs-textarea');
+  const pairsSaveFeedback = document.getElementById('pairs-save-feedback');
+
+  function pairsToText(){
+    return wordPairs
+      .map(p => p.civil + ', ' + p.undercover + ', ' + (p.played ? 'true' : 'false'))
+      .join('\n');
+  }
+
+  function parseTextToPairs(text){
+    const lines = text.split('\n');
+    const parsed = [];
+    for(const rawLine of lines){
+      const line = rawLine.trim();
+      if(!line) continue;
+      const parts = line.split(',').map(s => s.trim());
+      const civil = parts[0] || '';
+      const undercover = parts[1] || '';
+      if(!civil || !undercover) continue; // skip incomplete lines
+      const playedRaw = (parts[2] || '').toLowerCase();
+      const played = playedRaw === 'true';
+      parsed.push({ id: makeId(), civil, undercover, played });
+    }
+    return parsed;
+  }
+
+  function loadPairsIntoTextarea(){
+    pairsTextarea.value = pairsToText();
+    pairsSaveFeedback.textContent = '';
+  }
+
+  document.getElementById('btn-save-pairs').addEventListener('click', () => {
+    const parsed = parseTextToPairs(pairsTextarea.value);
+    wordPairs = parsed;
+    savePairs(wordPairs);
+    pairsTextarea.value = pairsToText();
+    pairsSaveFeedback.textContent = parsed.length + ' duo' + (parsed.length > 1 ? 's' : '') + ' enregistré' + (parsed.length > 1 ? 's' : '') + '.';
+  });
+
+  document.getElementById('btn-open-editor').addEventListener('click', () => {
+    loadPairsIntoTextarea();
+    showScreen('editor');
+  });
+
+  document.getElementById('btn-editor-back').addEventListener('click', () => {
+    showScreen('setup');
+  });
+
+  // ---------- ALL-TIME SCORES ----------
+  const allScoresList = document.getElementById('all-scores-list');
+  const allScoresEmpty = document.getElementById('all-scores-empty');
+
+  function renderAllScores(){
+    const scores = loadScores();
+    const rows = Object.keys(scores).map(name => ({ name, score: scores[name] || 0 }));
+    rows.sort((a,b) => b.score - a.score);
+
+    allScoresList.innerHTML = '';
+    if(rows.length === 0){
+      allScoresEmpty.style.display = 'block';
+      return;
+    }
+    allScoresEmpty.style.display = 'none';
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'result-row';
+      row.innerHTML =
+        '<span class="result-name">' + escapeHtml(r.name) + '</span>' +
+        '<span class="result-role" style="background:var(--accent-gold); color:var(--ink);">' +
+        r.score + (r.score > 1 ? ' pts' : ' pt') + '</span>';
+      allScoresList.appendChild(row);
+    });
+  }
+
+  document.getElementById('btn-reset-scores-confirm').addEventListener('click', () => {
+    resetScores();
+    renderAllScores();
+    document.getElementById('btn-reset-scores').style.display = 'block';
+    document.getElementById('reset-scores-confirm').style.display = 'none';
+    document.getElementById('reset-scores-feedback').textContent = 'Scores réinitialisés.';
+  });
+
+  document.getElementById('btn-reset-scores-cancel').addEventListener('click', () => {
+    document.getElementById('btn-reset-scores').style.display = 'block';
+    document.getElementById('reset-scores-confirm').style.display = 'none';
+  });
+
+  document.getElementById('btn-view-scores').addEventListener('click', () => {
+    document.getElementById('btn-reset-scores').style.display = 'block';
+    document.getElementById('reset-scores-confirm').style.display = 'none';
+    document.getElementById('reset-scores-feedback').textContent = '';
+    renderAllScores();
+    showScreen('scores');
+  });
+
+  document.getElementById('btn-scores-back').addEventListener('click', () => {
+    showScreen('setup');
+  });
+
+})();
+</script>
+</body>
+</html>
